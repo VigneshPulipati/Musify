@@ -1,4 +1,4 @@
-# Pulse
+# Musify
 
 A local-first music player UI for searching YouTube through `yt-dlp`, streaming audio, and managing a persistent queue.
 

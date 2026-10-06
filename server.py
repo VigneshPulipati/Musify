@@ -1,4 +1,4 @@
-"""Local yt-dlp bridge for Pulse.
+"""Local yt-dlp bridge for Musify.
 
 Run with: python server.py
 Install the optional dependency with: python -m pip install yt-dlp
@@ -63,5 +63,5 @@ def format_duration(seconds):
     return f"{seconds // 60}:{seconds % 60:02d}"
 
 if __name__ == "__main__":
-    print(f"Pulse yt-dlp service listening on http://{HOST}:{PORT}")
+    print(f"Musify yt-dlp service listening on http://{HOST}:{PORT}")
     ThreadingHTTPServer((HOST, PORT), Handler).serve_forever()

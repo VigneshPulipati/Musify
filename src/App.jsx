@@ -23,11 +23,11 @@ const hashPassword = async (password, salt) => {
 function App() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState(demoTracks);
-  const [queue, setQueue] = useState(() => read("pulse-queue", []));
-  const [current, setCurrent] = useState(() => read("pulse-current", null));
-  const [favorites, setFavorites] = useState(() => read("pulse-favorites", []));
-  const [recent, setRecent] = useState(() => read("pulse-recent", []));
-  const [playlists, setPlaylists] = useState(() => read("pulse-playlists", []));
+  const [queue, setQueue] = useState(() => read("musify-queue", []));
+  const [current, setCurrent] = useState(() => read("musify-current", null));
+  const [favorites, setFavorites] = useState(() => read("musify-favorites", []));
+  const [recent, setRecent] = useState(() => read("musify-recent", []));
+  const [playlists, setPlaylists] = useState(() => read("musify-playlists", []));
   const [view, setView] = useState("discover");
   const [selectedPlaylist, setSelectedPlaylist] = useState(null);
   const [showPlaylistForm, setShowPlaylistForm] = useState(false);
@@ -37,7 +37,7 @@ function App() {
   const [accountPassword, setAccountPassword] = useState("");
   const [accountError, setAccountError] = useState("");
   const [accountBusy, setAccountBusy] = useState(false);
-  const [user, setUser] = useState(() => read("pulse-session", null));
+  const [user, setUser] = useState(() => read("musify-session", null));
   const [playlistName, setPlaylistName] = useState("");
   const [playing, setPlaying] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -46,11 +46,11 @@ function App() {
   const [progress, setProgress] = useState(0);
   const audio = useRef(new Audio());
 
-  useEffect(() => localStorage.setItem("pulse-queue", JSON.stringify(queue)), [queue]);
-  useEffect(() => localStorage.setItem("pulse-current", JSON.stringify(current)), [current]);
-  useEffect(() => localStorage.setItem("pulse-favorites", JSON.stringify(favorites)), [favorites]);
-  useEffect(() => localStorage.setItem("pulse-recent", JSON.stringify(recent)), [recent]);
-  useEffect(() => localStorage.setItem("pulse-playlists", JSON.stringify(playlists)), [playlists]);
+  useEffect(() => localStorage.setItem("musify-queue", JSON.stringify(queue)), [queue]);
+  useEffect(() => localStorage.setItem("musify-current", JSON.stringify(current)), [current]);
+  useEffect(() => localStorage.setItem("musify-favorites", JSON.stringify(favorites)), [favorites]);
+  useEffect(() => localStorage.setItem("musify-recent", JSON.stringify(recent)), [recent]);
+  useEffect(() => localStorage.setItem("musify-playlists", JSON.stringify(playlists)), [playlists]);
   useEffect(() => {
     const player = audio.current;
     player.volume = volume / 100;
@@ -102,22 +102,22 @@ function App() {
     if (name.length < 2 || accountPassword.length < 8) { setAccountError("Use a name and a password of at least 8 characters."); return; }
     setAccountBusy(true); setAccountError("");
     try {
-      const accounts = read("pulse-accounts", []);
+      const accounts = read("musify-accounts", []);
       const existing = accounts.find((item) => item.name.toLowerCase() === name.toLowerCase());
       if (accountMode === "register" && existing) { setAccountError("That account already exists."); return; }
       if (accountMode === "login") {
         if (!existing || existing.passwordHash !== await hashPassword(accountPassword, existing.salt)) { setAccountError("Incorrect name or password."); return; }
         const session = { id: existing.id, name: existing.name };
-        setUser(session); localStorage.setItem("pulse-session", JSON.stringify(session)); setShowAccountForm(false); return;
+        setUser(session); localStorage.setItem("musify-session", JSON.stringify(session)); setShowAccountForm(false); return;
       }
       const salt = crypto.randomUUID();
       const account = { id: crypto.randomUUID(), name, salt, passwordHash: await hashPassword(accountPassword, salt), createdAt: new Date().toISOString() };
-      localStorage.setItem("pulse-accounts", JSON.stringify([...accounts, account]));
+      localStorage.setItem("musify-accounts", JSON.stringify([...accounts, account]));
       const session = { id: account.id, name: account.name };
-      setUser(session); localStorage.setItem("pulse-session", JSON.stringify(session)); setShowAccountForm(false);
+      setUser(session); localStorage.setItem("musify-session", JSON.stringify(session)); setShowAccountForm(false);
     } finally { setAccountBusy(false); }
   };
-  const logout = () => { setUser(null); localStorage.removeItem("pulse-session"); };
+  const logout = () => { setUser(null); localStorage.removeItem("musify-session"); };
   const addToPlaylist = (playlistId, track) => setPlaylists((items) => items.map((item) => item.id === playlistId && !item.tracks.some((song) => song.id === track.id) ? { ...item, tracks: [...item.tracks, track] } : item));
   const queued = useMemo(() => new Set(queue.map((item) => item.id)), [queue]);
   const visibleTracks = view === "favorites" ? favorites : view === "recent" ? recent : view === "queue" ? queue : view === "playlist" ? playlists.find((item) => item.id === selectedPlaylist)?.tracks || [] : results;
@@ -125,7 +125,7 @@ function App() {
 
   return <div className="app-shell">
     <aside className="sidebar">
-      <div className="brand"><div className="brand-mark"><AudioLines size={19} /></div><span>pulse</span></div>
+      <div className="brand"><div className="brand-mark"><AudioLines size={19} /></div><span>musify</span></div>
       <nav><p className="nav-label">Library</p>
         <button className={`nav-item ${view === "discover" ? "active" : ""}`} onClick={() => nav("discover")}><Sparkles size={17} /> Discover</button>
         <button className={`nav-item ${view === "favorites" ? "active" : ""}`} onClick={() => nav("favorites")}><Heart size={17} /> Favorites <span className="nav-count">{favorites.length}</span></button>
