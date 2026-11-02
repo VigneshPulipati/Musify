@@ -4,6 +4,8 @@ Musify is a local-first music player built with React and Vite. It searches YouT
 
 All account and library data is kept in the browser's `localStorage`; there is no remote database or account service in this repository.
 
+# [GitHub](https://github.com/VigneshPulipati/Musify.git) 
+
 ## Features
 
 - Search for artists and songs through YouTube
